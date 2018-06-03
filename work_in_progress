@@ -1,0 +1,290 @@
+#include <iostream>
+#include <fstream>
+#include <fstream>
+#include <string>
+#include <limits>
+#include <istream>
+#include <sstream>
+
+using namespace std;
+
+ifstream f1("totalprezentari.txt");
+ofstream f2("minimpct.txt");
+ifstream f3("3prezentari.txt");
+ifstream f4("4prezentari.txt");
+ofstream f5("planificare.txt");
+ofstream f6("inputtasta.txt");
+
+int x[100], p[100], a[100], prezentari, credite, nrzile, limitainf=0;
+
+void citire(int a[], int &prezentari)
+{   f1>>prezentari;
+    for(int i=1;i<=prezentari;i++)
+    f1>>a[i];
+    f1>>credite;
+}
+
+void afisare1(int prezentari)
+{  for(int i=1;i<=prezentari;i++)
+        if(x[i]!=0)
+            f2<<a[x[i]]<<" ";
+    f2<<endl;
+}
+
+int verificare1(int k)
+{   if(k>1)
+    if(a[x[k]]>a[x[k-1]])
+        return 0;
+    return 1;
+}
+
+void ordonare(int a[], int prezentari)
+{   int i, j, aux;
+    for(i=1;i<prezentari;i++)
+        for(j=i+1;j<=prezentari;j++)
+        if(a[i]<a[j])
+        {   aux=a[i];
+            a[i]=a[j];
+            a[j]=aux;
+        }
+}
+
+void back1(int x[], int k, int sp)
+{  int i;
+   for(i=x[k-1]+1;i<=prezentari;i++)
+   {   x[k]=i;
+       sp=sp+a[x[k]];
+       if(verificare1(k))
+            {   if(sp>=credite)
+            afisare1(k);
+       else back1(x, k+1, sp);}
+       sp=sp-a[x[k]];
+   }
+}
+
+int input(string str, const int limitasup, const int limitainf=0)
+{   int num;
+    do
+    {   cout << "\nIntroduceti un numar " << str << " (" << (limitainf + 1) << "-" << limitasup << ") ";
+        cin >> num;
+        if (num <= limitainf && !cin.fail())
+        {   cout<<"Input-ul trebuie sa fie pozitiv!\n"<<endl;
+        }
+        if (num > limitasup  && !cin.fail())
+        {   cout<<"Input-ul trebuie sa fie intre 1-3!\n"<<endl;
+        }
+        if(cin.fail())
+        {   cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout<<"Input-ul trebuie sa fie de tip int!\n"<<endl;
+        }}
+    while ((num <= limitainf || num > limitasup) && !cin.fail());
+    system("CLS");
+    return num;
+}
+
+void afisare2(int x[], int prezentari, int nrzile)
+{   for(int i=1;i<=nrzile;i++)
+        f5<<x[i]<<" ";
+       f5<<endl;
+
+}
+void afisare3(int x[],int nrprez,int zile)
+{
+     for(int i=1;i<=zile;i++)
+        cout<<" "<<x[i]<<" ";
+       cout<<endl;
+}
+
+int verificare2(int x[], int k, int prezentari, int nrzile)
+{   if(k>1)
+    {   if(x[k-1]*x[k]!=0)
+            return 0;
+        if(x[k]>1)
+            {   for(int i=1;i<k;i++)
+             if(x[i]==x[k]-1)
+             return 1;
+            return 0;}
+    }
+    if(x[1]>1)
+        return 0;
+    if(x[k]==0)
+    {   int s=0;
+        for(int i=1;i<=k;i++)
+        if(x[i]==0)
+        s++;
+        if(s>nrzile-prezentari)
+        return 0;
+    }
+    return 1;}
+
+void back2(int x[], int prezentari, int nrzile, int k)
+{   int i;
+    for(i=0;i<=prezentari;i++)
+        if(!p[i]||i==0)
+        {   x[k]=i;
+            p[i]=1;
+            if(verificare2(x, k, prezentari, nrzile))
+                {if (k==nrzile)
+                afisare2(x, prezentari, nrzile);
+                         else back2(x, prezentari, nrzile, k+1);}
+            p[i]=0;
+        }}
+
+        int verificare3(int x[], int k, int nrprez, int zile)
+{   if(k>1)
+    {   if(x[k-1]*x[k]!=0)
+            return 0;
+        if(x[k]>1)
+            {   for(int i=1;i<k;i++)
+             if(x[i]==x[k]-1)
+             return 1;
+            return 0;}
+    }
+    if(x[1]>1)
+        return 0;
+    if(x[k]==0)
+    {   int s=0;
+        for(int i=1;i<=k;i++)
+        if(x[i]==0)
+        s++;
+        if(s>zile-nrprez)
+        return 0;
+    }
+    return 1;}
+
+void back3(int x[], int nrprez, int zile, int k)
+{
+   int i;
+    for(i=0;i<=nrprez;i++)
+        if(!p[i]||i==0)
+        {   x[k]=i;
+            p[i]=1;
+            if(verificare3(x, k, nrprez, zile))
+                {if (k==zile)
+                afisare3(x, nrprez, zile);
+                         else back3(x, nrprez, zile, k+1);}
+            p[i]=0;
+        }
+}
+
+void meniu()
+{   system("MODE 100, 40");
+    while(true)
+    {   system("CLS");
+        cout << "\n\n\n\n\n\t\t|-----------------------------------------------------|\n\n";
+        cout << "\t\t|       Tastati 1 pentru a vedea toate modurile de    |\n\n";
+        cout<<  "\t\t|        alegere a prezentarilor                      |\n\n";
+        cout << "\t\t|       Tastati 2 pentru a vedea posibilele           |\n\n";
+        cout<<  "\t\t|        organizari ale prezentarilor                 |\n\n";
+        cout << "\t\t|       Tastati 3 pentru a da un numar de prezentari  |\n\n";
+        cout<<  "\t\t|         si un numar de zile pentru planificare      |\n\n";
+        cout<<  "\t\t|       Tastati 4 pentru iesirea din program          |\n\n";
+        cout << "\t\t|-----------------------------------------------------|\n";
+        int choice = input("intre", 4);
+
+        if ( choice == 1 )
+            {   string text;
+            ifstream ifs("minimpct.txt");
+            while(!ifs.eof())
+                {   getline(ifs, text);
+                    cout << " " << text << "\n" ;}
+                    system("PAUSE");}
+
+        else if ( choice == 2 )
+            {   string text;
+                ifstream ifs("planificare.txt");
+                while(!ifs.eof())
+                    {   getline(ifs, text);
+                        cout << " " << text << "\n" ;
+                        }
+                        system("PAUSE");
+                        }
+                        else if (choice == 3)
+
+                            { int nrprez;
+                              int zile;
+
+                            cout<<" Dati numarul de prezentari: ";
+                            cin>>nrprez;
+                            while(cin.fail()|| nrprez<0){
+
+                                    cout<<" Introduceti un numar intreg pozitiv de la tastaura!\n";
+                                    cin.clear();
+                                    cin.ignore(256, '\n');
+                                    cin >> nrprez;
+                            }
+
+                            cout<<" Dati numarul de zile: ";
+                            cin>>zile;
+                            while(cin.fail()|| zile<0)
+                            {
+                              cout<<" Introduceti doar un numar interg pozitiv de la tastatura!\n";
+                              cin.clear();
+                              cin.ignore(256, '\n');
+                              cin >> zile;
+                            }
+
+                            if(zile>=nrprez*2)
+                            {cout<<" Pentru "<<nrprez<<" prezentari planificarea in "<<zile<<" zile poate fi facuta astfel :\n\n";
+                            back3(x, nrprez, zile, 1);
+
+                            }
+
+                            while(zile<nrprez*2)
+                                { cout<<" Numarul de zile trebuie sa fie cel putin dublu fata de numarul de prezentari!\n";
+                              cout<<" Dati numarul de prezentari: ";
+                              cin>>nrprez;
+                              while(cin.fail()|| nrprez<0){
+
+                                    cout<<" Introduceti un numar intreg pozitiv de la tastaura!\n";
+                                    cin.clear();
+                                    cin.ignore(256, '\n');
+                                    cin >> nrprez;
+                            }
+
+                              cout<<" Dati numarul de zile: ";
+                              cin>>zile;
+                              while(cin.fail()|| zile<0){
+
+                                    cout<<" Introduceti un numar intreg pozitivde la tastaura!\n";
+                                    cin.clear();
+                                    cin.ignore(256, '\n');
+                                    cin >> zile;
+                            }
+
+
+                              if(zile>=nrprez*2)
+                            {cout<<" Pentru "<<nrprez<<" prezentari planificarea in "<<zile<<" zile poate fi facuta astfel :\n\n";
+                             back3(x, nrprez, zile, 1);
+
+                            }
+                              }
+
+                             system("PAUSE");
+                            }
+
+                                 /////////
+                                 else if (choice == 4)
+                                 {
+                                     exit(0);
+                                 }
+}}
+
+int main()
+{   citire(a, prezentari);
+    ordonare(a, prezentari);
+    back1(x, 1, 0);
+    f1.close();
+    f2.close();
+
+    f3>>prezentari>>nrzile;
+    back2(x, prezentari, nrzile, 1);
+    f4>>prezentari>>nrzile;
+    back2(x, prezentari, nrzile, 1);
+    f3.close();
+    f4.close();
+    f5.close();
+    meniu();
+    return 0;
+}
